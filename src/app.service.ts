@@ -50,8 +50,8 @@ export class AppService {
       .replace('{jobs}', linkedInProfile.jobs.join(', '))
       .replace('{recipient_company}', linkedInProfile.company)
       .replace(/{product_description}/g, linkedInProfile.productDescription)
-      .replace('{sender_firstname}', 'DNA')
-      .replace('{sender_company}', 'DNA')
+      .replace('{sender_firstname}', 'Rainer')
+      .replace('{sender_company}', 'Leadfinder')
       .replace('{dna}', data.dna)
       .replace('{recipient_LI_about}', linkedInProfile.about)
       .replace('{recipient_LI_experience}', linkedInProfile.experience);
