@@ -36,7 +36,7 @@ export class AppService {
       jobs: ['Job1', 'Job2'],
       company: 'Unknown OÜ',
       productDescription: 'Awsome product',
-      about: 'This is my about',
+      about: profile.headline,
       experience: 'This is my experience',
     };
   }
