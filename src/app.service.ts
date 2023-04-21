@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-const LinkedinClient = require('linkedin-client');
-import * as XLSX from 'xlsx';
 
 import { CreateMailsBodyDto, LinkedInProfileDto } from './dtos';
-import { LinkedInProfile } from './interfaces';
+import { LinkedInService, XlsxService } from './services';
 
 @Injectable()
 export class AppService {
-  private readonly linkedInClient = new LinkedinClient(
-    'AQEDAShZj6oB3h87AAABh6IZoigAAAGHxiYmKE0AUJjDggkrgCTzkSKDSUB0X8GHLDvoZ_4ceX9lpP7yUTndrglKNp5tKsSbYOnAPuFeUQSBWlUDabZAwSoBMFquW11E89F2XWXwv-XD9xKQQ7HwuFnv',
-  );
+  constructor(
+    private readonly linkedInService: LinkedInService,
+    private readonly xlsxService: XlsxService,
+  ) {}
 
   async createMails(data: CreateMailsBodyDto): Promise<void> {
-    const linkedInUrls = this.getLinkedInUrls();
+    const linkedInUrls = this.xlsxService.getLinkedInUrls();
     const prompts = await this.createPrompts(data, linkedInUrls);
+    console.log(prompts);
   }
 
   private async createPrompts(
@@ -22,23 +22,10 @@ export class AppService {
   ): Promise<Map<number, string>> {
     const prompts = new Map<number, string>();
     for (const [i, url] of linkedInUrls) {
-      const profile = await this.getLinkedInProfile(url);
+      const profile = await this.linkedInService.getProfile(url);
       prompts.set(i, this.createPrompt(data, profile));
     }
     return prompts;
-  }
-
-  private async getLinkedInProfile(url: string): Promise<LinkedInProfileDto> {
-    // TODO: Possibly create own scraper
-    const profile: LinkedInProfile = await this.linkedInClient.fetch(url);
-    return {
-      firstName: profile.firstName,
-      jobs: ['Job1', 'Job2'],
-      company: 'Unknown OÜ',
-      productDescription: 'Awsome product',
-      about: profile.headline,
-      experience: 'This is my experience',
-    };
   }
 
   private createPrompt(
@@ -55,19 +42,5 @@ export class AppService {
       .replace('{dna}', data.dna)
       .replace('{recipient_LI_about}', linkedInProfile.about)
       .replace('{recipient_LI_experience}', linkedInProfile.experience);
-  }
-
-  private getLinkedInUrls(amount = 10): Map<number, string> {
-    const workbook = XLSX.readFile('src/data/sample-list.xlsx');
-    const [sheetName] = workbook.SheetNames;
-    const sheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(sheet);
-    const linkedinUrls = new Map<number, string>();
-    data
-      .slice(0, amount)
-      .forEach((row, i) =>
-        linkedinUrls.set(i, <string>(<Record<string, unknown>>row)['linkedin']),
-      );
-    return linkedinUrls;
   }
 }
