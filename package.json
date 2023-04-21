@@ -27,6 +27,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "install": "^0.13.0",
+    "linkedin-client": "^0.1.1",
     "npm": "^9.6.5",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
