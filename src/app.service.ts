@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-const XLSX = require('xlsx');
+import * as XLSX from 'xlsx';
 
 @Injectable()
 export class AppService {
@@ -7,19 +7,17 @@ export class AppService {
     return 'Hello World!';
   }
 
-  getLinkedInUrls(): Map<Number, string> {
+  getLinkedInUrls(): Map<number, string> {
     const workbook = XLSX.readFile('src/data/sample-list.xlsx');
-    const sheetName = workbook.SheetNames[0];
+    const [sheetName] = workbook.SheetNames;
     const sheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(sheet);
-    const linkedinUrls = new Map<Number, string>();
-
-    for (let index = 0; index < 10; index++)
-      linkedinUrls.set(
-        index,
-        <string>(<Record<string, unknown>>data[index])['linkedin'],
+    const linkedinUrls = new Map<number, string>();
+    data
+      .slice(0, 10)
+      .forEach((row, i) =>
+        linkedinUrls.set(i, <string>(<Record<string, unknown>>row)['linkedin']),
       );
-
     return linkedinUrls;
   }
 }
