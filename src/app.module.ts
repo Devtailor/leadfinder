@@ -1,11 +1,20 @@
 import { Module, ValidationPipe } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LinkedInService, XlsxService } from './services';
+import { LinkedInService, OpenAiService, XlsxService } from './services';
+import { configFactory } from './config.factory';
 
 @Module({
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: `${__dirname}/../config/${process.env.NODE_ENV}.env`,
+      expandVariables: true,
+    }),
+    ConfigModule.forFeature(configFactory),
+  ],
   controllers: [AppController],
   providers: [
     {
@@ -14,6 +23,7 @@ import { LinkedInService, XlsxService } from './services';
     },
     AppService,
     LinkedInService,
+    OpenAiService,
     XlsxService,
   ],
 })
