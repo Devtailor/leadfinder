@@ -11,10 +11,11 @@ export class AppService {
     private readonly xlsxService: XlsxService,
   ) {}
 
-  async createMails(data: CreateMailsBodyDto): Promise<void> {
+  async createMails(data: CreateMailsBodyDto): Promise<Buffer> {
     const linkedInUrls = this.xlsxService.getLinkedInUrls(1);
     const prompts = await this.createPrompts(data, linkedInUrls);
     const emails = await this.openAiService.getEmails(prompts, data.dna);
+    return this.xlsxService.addEmailsToInputFile(emails);
   }
 
   private async createPrompts(
