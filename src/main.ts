@@ -1,3 +1,5 @@
+process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';

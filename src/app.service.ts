@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
 
 import { CreateMailsBodyDto, LinkedInProfileDto } from './dtos';
-import { LinkedInService, XlsxService } from './services';
+import { LinkedInService, OpenAiService, XlsxService } from './services';
 
 @Injectable()
 export class AppService {
   constructor(
     private readonly linkedInService: LinkedInService,
+    private readonly openAiService: OpenAiService,
     private readonly xlsxService: XlsxService,
   ) {}
 
-  async createMails(data: CreateMailsBodyDto): Promise<void> {
-    const linkedInUrls = this.xlsxService.getLinkedInUrls();
+  async createMails(data: CreateMailsBodyDto): Promise<Buffer> {
+    const linkedInUrls = this.xlsxService.getLinkedInUrls(1);
     const prompts = await this.createPrompts(data, linkedInUrls);
-    console.log(prompts);
+    const emails = await this.openAiService.getEmails(prompts, data.dna);
+    return this.xlsxService.addEmailsToInputFile(emails);
   }
 
   private async createPrompts(
